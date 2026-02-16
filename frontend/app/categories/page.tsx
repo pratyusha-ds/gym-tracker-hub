@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import CategoryList from "./CategoryList";
-// import SearchBar from '@/app/components/SearchBar';
+import SearchBar from "@/app/components/SearchBar";
 // import AddCategoryModal from '@/components/AddCategoryModal'
 
 export default async function Page({
@@ -16,7 +16,7 @@ export default async function Page({
         <h1 className="text-4xl font-black uppercase italic tracking-tighter mb-8">
           Your <span className="text-primary">Workouts</span>
         </h1>
-        {/* <SearchBar /> */}
+        <SearchBar />
         <div className="mt-10 space-y-4">
           <Suspense
             key={query}
