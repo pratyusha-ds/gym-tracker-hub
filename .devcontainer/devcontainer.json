@@ -1,0 +1,50 @@
+{
+  "name": "Gym Tracker",
+  "dockerComposeFile": "../compose.yaml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/gym-app",
+
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume"
+  ],
+
+  "remoteUser": "vscode",
+
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "installMaven": "true"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "dbaeumer.vscode-eslint",
+        "vmware.vscode-spring-boot-dashboard",
+        "esbenp.prettier-vscode",
+        "redhat.vscode-xml"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[xml]": {
+          "editor.defaultFormatter": "redhat.vscode-xml"
+        },
+        "[java]": {
+          "editor.defaultFormatter": "redhat.java",
+          "editor.formatOnSave": true
+        }
+      }
+    }
+  },
+
+  "forwardPorts": [8080, 3000, 5432, 5050],
+
+  "postCreateCommand": "sudo chown -R vscode:vscode /workspaces/gym-app && java -version && node -v"
+}

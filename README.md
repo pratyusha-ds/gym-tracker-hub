@@ -4,18 +4,16 @@
 [![Spring Boot](https://img.shields.io/badge/Backend-Spring%20Boot%203-brightgreen?style=for-the-badge&logo=springboot)](https://spring.io)
 [![Zod Validated](https://img.shields.io/badge/Validation-Zod-blue?style=for-the-badge&logo=zod)](https://zod.dev)
 
-
 A workout tracking application built with the **Next.js Architecture**, **Shadcn/UI**, and a **Java Spring Boot** backend.
 
 ---
-
 
 ## Data Flow Diagram
 
 ```mermaid
 sequenceDiagram
     autonumber
-    
+
     %% Use distinct actors
     participant U as User
     participant C as React Form
@@ -40,4 +38,5 @@ sequenceDiagram
     SA->>SA: revalidatePath('/categories')
     SA-->>U: UI Updates (No Refresh)
 ```
+
 ---
