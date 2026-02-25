@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 @Entity
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,18 +17,14 @@ public class Category {
 
     private String iconUrl;
 
-    public Category() {
-    }
-
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Exercise> exercises = new ArrayList<>();
 
-    public Long getId() {
-        return id;
+    public Category() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
