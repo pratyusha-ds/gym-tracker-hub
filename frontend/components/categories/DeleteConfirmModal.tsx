@@ -28,7 +28,7 @@ export default function DeleteConfirmModal({
 }: DeleteConfirmModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[400px] bg-zinc-950 border-red-900/50 text-white">
+      <DialogContent className="sm:max-w-100 bg-zinc-950 border-red-900/50 text-white">
         <DialogHeader className="flex flex-col items-center gap-2">
           <div className="h-12 w-12 rounded-full bg-red-500/10 flex items-center justify-center mb-2">
             <AlertTriangle className="text-red-500" size={24} />

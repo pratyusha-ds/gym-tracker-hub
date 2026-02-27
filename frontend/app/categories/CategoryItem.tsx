@@ -8,10 +8,10 @@ import {
   updateCategoryNameAction,
   updateExerciseAction,
 } from '@/app/categories/actions';
-import CategoryCard from '@/components/CategoryCard';
-import ExerciseList from '@/components/ExerciseList';
-import EditNameModal from '@/components/EditNameModal';
-import DeleteConfirmModal from '@/components/DeleteConfirmModal';
+import CategoryCard from '@/components/categories/CategoryCard';
+import ExerciseList from '@/components/categories/ExerciseList';
+import EditNameModal from '@/components/categories/EditNameModal';
+import DeleteConfirmModal from '@/components/categories/DeleteConfirmModal';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 

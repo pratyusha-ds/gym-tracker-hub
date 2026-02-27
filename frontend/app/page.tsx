@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import desktopBg from '@/assets/hero-desktop.jpg';
 import mobileBg from '@/assets/hero-mobile.jpg';
+import { Calendar } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -40,12 +41,22 @@ export default function Home() {
           <span className="text-white block mt-2">Your Fitness Journey, Simplified.</span>
         </p>
 
-        <Link
-          href="/categories"
-          className="bg-primary hover:bg-red-700 text-white font-black px-12 py-5 text-xl uppercase tracking-widest transition-all active:scale-95 rounded-sm inline-block"
-        >
-          Get Started
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <Link
+            href="/categories"
+            className="w-full sm:w-auto bg-primary hover:bg-red-700 text-white font-black px-12 py-5 text-xl uppercase tracking-widest transition-all active:scale-95 rounded-sm inline-block"
+          >
+            Get Started
+          </Link>
+
+          <Link
+            href="/history"
+            className="w-full sm:w-auto flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-white border border-white/20 font-black px-10 py-5 text-xl uppercase tracking-widest transition-all active:scale-95 rounded-sm backdrop-blur-md"
+          >
+            <Calendar size={22} className="text-primary" />
+            View History
+          </Link>
+        </div>
       </div>
     </main>
   );

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Exercise, ExerciseListProps } from '@/types';
 import { Dumbbell, Trash2, ChevronRight, Pencil } from 'lucide-react';
 import Link from 'next/link';
-import DeleteConfirmModal from '@/components/DeleteConfirmModal';
+import DeleteConfirmModal from '@/components/categories/DeleteConfirmModal';
 import { toast } from 'sonner';
 
 export default function ExerciseList({

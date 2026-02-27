@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import AddCategoryModal from '@/components/AddCategoryModal';
+import AddCategoryModal from '@/components/categories/AddCategoryModal';
 
 vi.mock('@/app/categories/actions', () => ({
   createCategoryAction: vi.fn(() => Promise.resolve({ success: true })),
