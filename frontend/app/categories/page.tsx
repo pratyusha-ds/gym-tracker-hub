@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import CategoryList from './CategoryList';
-import SearchBar from '@/components/SearchBar';
+import SearchBar from '@/components/categories/SearchBar';
 import AddCategoryModal from '@/components/categories/AddCategoryModal';
 
 export default async function Page({

@@ -11,7 +11,7 @@ import {
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { JumpToOverlay } from '@/components/history/JumpToOverlay';
+import { JumpToOverlay } from '@/components/history/calendar/JumpToOverlay';
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
