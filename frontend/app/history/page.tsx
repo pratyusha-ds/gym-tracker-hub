@@ -44,17 +44,7 @@ export default function CalendarPage() {
 
       return () => clearTimeout(timer);
     }
-  }, [showJumpTo, selYear, selMonth]);
-
-  if (!currentDate) {
-    return (
-      <main className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-zinc-500 font-black animate-pulse uppercase tracking-[0.3em]">
-          Loading Logbook...
-        </div>
-      </main>
-    );
-  }
+  }, [showJumpTo]);
 
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
