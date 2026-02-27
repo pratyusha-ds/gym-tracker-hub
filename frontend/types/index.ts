@@ -9,6 +9,33 @@ export interface Category {
   exercises: Exercise[];
 }
 
+export interface WorkoutSet {
+  id: number;
+  weight: string;
+  reps: string;
+  completed: boolean;
+}
+
+export interface SessionHistoryEntry {
+  date: string;
+  totalVolume: string;
+  sets: Array<{
+    kg: string;
+    reps: string;
+  }>;
+}
+
+export interface HeaderProps {
+  exerciseId: string;
+  onFinish: () => void;
+}
+
+export interface ActiveWorkoutProps {
+  sets: WorkoutSet[];
+  onAddSet: () => void;
+  onToggleSet: (id: number) => void;
+}
+
 export interface CategoryCardProps {
   category: Category;
   isOpen: boolean;
