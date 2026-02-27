@@ -58,7 +58,7 @@ export default function ExerciseList({
           <li key={ex.id} className="group transition-colors hover:bg-zinc-900/50">
             <div className="p-4 flex items-center justify-between">
               <Link
-                href={`/workout/${ex.id}`}
+                href={`/exercises/${ex.id}`}
                 className="flex items-center gap-3 flex-1"
                 onClick={(e) => {
                   if ((e.target as HTMLElement).closest('button')) {
