@@ -1,18 +1,17 @@
 package com.gymtracker.backend.categories;
 
 import com.gymtracker.backend.exercises.Exercise;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.ArrayList;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
@@ -29,40 +28,31 @@ public class CategoryService {
         }
 
         String cleanCatName = category.getName().trim();
-        Optional<Category> existingCategoryOpt = categoryRepository.findByNameIgnoreCase(cleanCatName);
+        
+        Category finalCategory = categoryRepository.findByNameIgnoreCase(cleanCatName)
+                .orElseGet(() -> categoryRepository.saveAndFlush(
+                    Category.builder()
+                        .name(cleanCatName)
+                        .exercises(new ArrayList<>())
+                        .build()
+                ));
 
-        boolean noExercisesProvided = category.getExercises() == null || category.getExercises().isEmpty();
-
-        Category finalCategory;
-        if (existingCategoryOpt.isPresent()) {
-            if (noExercisesProvided) {
-                throw new RuntimeException("Category '" + cleanCatName + "' already exists.");
-            }
-            finalCategory = existingCategoryOpt.get();
-        } else {
-            finalCategory = new Category();
-            finalCategory.setName(cleanCatName);
-            finalCategory.setExercises(new ArrayList<>());
-            finalCategory = categoryRepository.saveAndFlush(finalCategory);
-        }
-
-        if (!noExercisesProvided) {
+        if (category.getExercises() != null && !category.getExercises().isEmpty()) {
             for (Exercise incomingEx : category.getExercises()) {
                 String cleanExName = incomingEx.getName().trim();
-                if (cleanExName.isEmpty())
-                    continue;
+                if (cleanExName.isEmpty()) continue;
 
-                boolean alreadyHasExercise = finalCategory.getExercises().stream()
+                boolean exists = finalCategory.getExercises().stream()
                         .anyMatch(e -> e.getName().equalsIgnoreCase(cleanExName));
 
-                if (alreadyHasExercise) {
+                if (exists) {
                     throw new RuntimeException("'" + cleanExName + "' already exists in " + finalCategory.getName());
                 }
 
-                Exercise newExercise = new Exercise();
-                newExercise.setName(cleanExName);
-                newExercise.setCategory(finalCategory);
-                finalCategory.getExercises().add(newExercise);
+                finalCategory.getExercises().add(Exercise.builder()
+                        .name(cleanExName)
+                        .category(finalCategory)
+                        .build());
             }
             return categoryRepository.save(finalCategory);
         }
@@ -72,9 +62,6 @@ public class CategoryService {
 
     @Transactional
     public Category updateCategory(Long id, Category details) {
-        if (id == null)
-            throw new RuntimeException("ID is required for update");
-
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
@@ -91,9 +78,6 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategory(Long id) {
-        if (id == null)
-            throw new RuntimeException("ID is required for deletion");
-
         if (!categoryRepository.existsById(id)) {
             throw new RuntimeException("Category not found with ID: " + id);
         }
