@@ -1,34 +1,12 @@
-spring:
-  main:
-    allow-bean-definition-overriding: true
-
-  docker:
-    compose:
-      enabled: false
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME:gym_tracker}
-    username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:password}
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    generate-ddl: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-
 server:
   port: 8080
   error:
     whitelabel:
       enabled: false
 
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  docker:
+    compose:
+      enabled: false
