@@ -1,37 +1,77 @@
 import type { Metadata } from 'next';
+import { ClerkProvider } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 import { geistSans, geistMono } from '@/lib/fonts';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
-
+import SyncUser from '@/components/auth/SyncUser';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 export const metadata: Metadata = {
-  title: 'Sweat & Conquer',
-  description: 'Track your workouts and stay motivated.',
+  title: 'STARKREP | Precision Strength Tracking',
+  description: 'Strength workout tracking for the dedicated athlete.',
+  openGraph: {
+    title: 'STARKREP',
+    description: 'Precision Strength Tracking',
+    url: 'https://starkrep.com',
+    siteName: 'StarkRep',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1637666062717-1c6bcfa4a4df?q=80&w=1170&auto=format&fit=crop',
+        width: 1200,
+        height: 630,
+        alt: 'StarkRep',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
 };
 
+/**
+ * RootLayout defines the global application structure, integrating
+ * Clerk authentication providers, the Geist font family, and the
+ * StarkRep custom dark theme.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
-      >
-        {children}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: {
-              background: '#09090b',
-              color: '#ef4444',
-              border: '1px solid #7f1d1d',
-              fontWeight: '600',
-              textTransform: 'uppercase' as const,
-            },
-          }}
-        />
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+        variables: {
+          colorPrimary: '#ef4444',
+        },
+      }}
+    >
+      <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white min-h-screen flex flex-col`}
+        >
+          <SyncUser />
+          <Navbar />
+          <main className="grow pt-24 pb-12 max-w-7xl mx-auto w-full px-4 not-italic">
+            {children}
+          </main>
+          <Footer />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: '#09090b',
+                color: '#ef4444',
+                border: '1px solid #7f1d1d',
+                fontWeight: '900',
+                textTransform: 'uppercase' as const,
+                fontStyle: 'italic',
+              },
+            }}
+          />{' '}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
