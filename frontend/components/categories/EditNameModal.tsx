@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EditNameModalProps } from '@/types';
 import {
   Dialog,
@@ -21,8 +21,13 @@ export default function EditNameModal({
 }: EditNameModalProps) {
   const [currentValue, setCurrentValue] = useState(initialName);
 
+  useEffect(() => {
+    setCurrentValue(initialName);
+  }, [initialName, isOpen]);
+
   const handleUpdate = () => {
-    onSave(currentValue);
+    if (!currentValue.trim()) return;
+    onSave(currentValue.trim());
   };
 
   return (
