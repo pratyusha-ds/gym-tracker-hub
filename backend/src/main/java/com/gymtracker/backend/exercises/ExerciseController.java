@@ -1,48 +1,48 @@
 package com.gymtracker.backend.exercises;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/exercises")
+@RequiredArgsConstructor
 public class ExerciseController {
 
-    @Autowired
-    private ExerciseService exerciseService;
+    private final ExerciseService exerciseService;
 
     @GetMapping("/search")
-    public List<Exercise> search(@RequestParam String name) {
+    public List<ExerciseDTO> search(@RequestParam String name) {
         return exerciseService.searchExercises(name);
     }
 
     @GetMapping("/category/{categoryId}")
-    public List<Exercise> getByCategory(@PathVariable Long categoryId) {
-        if (categoryId == null)
-            return List.of();
+    public List<ExerciseDTO> getByCategory(@PathVariable Long categoryId) {
         return exerciseService.getExercisesByCategory(categoryId);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ExerciseDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(exerciseService.mapToDTO(exerciseService.getExerciseById(id)));
+    }
+
     @PostMapping
-    public Exercise createExercise(@RequestBody ExerciseRequest request) {
+    public ExerciseDTO createExercise(@RequestBody ExerciseRequest request) {
         return exerciseService.addExercise(request);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateExercise(@PathVariable Long id, @RequestBody ExerciseRequest request) {
-        if (id == null)
-            return ResponseEntity.badRequest().body(Map.of("message", "Exercise ID required"));
+    public ResponseEntity<ExerciseDTO> updateExercise(
+            @PathVariable Long id,
+            @RequestBody ExerciseRequest request) {
         return ResponseEntity.ok(exerciseService.updateExercise(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteExercise(@PathVariable Long id) {
-        if (id == null)
-            return ResponseEntity.badRequest().body(Map.of("message", "Exercise ID required"));
+    public ResponseEntity<Void> deleteExercise(@PathVariable Long id) {
         exerciseService.deleteExercise(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     public record ExerciseRequest(String name, Long categoryId) {
