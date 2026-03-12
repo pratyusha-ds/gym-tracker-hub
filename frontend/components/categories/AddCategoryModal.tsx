@@ -75,17 +75,18 @@ export default function AddCategoryModal() {
       if (result && result.success) {
         setOpen(false);
         setTimeout(() => {
-          toast('Successfully Added', { style: redTingeStyle });
+          toast.success(`${data.name.toUpperCase()} CREATED`, { style: redTingeStyle });
+          resetEverything();
           setIsSubmitting(false);
         }, 300);
       } else {
         toast.error(result?.error || 'Could not save', {
-          style: { background: '#ef4444', color: '#fff', border: 'none' },
+          style: { background: '#7f1d1d', color: '#fff', border: '1px solid #ef4444' },
         });
         setIsSubmitting(false);
       }
     } catch {
-      toast.error('Connection failed', { style: { background: '#ef4444', color: '#fff' } });
+      toast.error('Connection failed');
       setIsSubmitting(false);
     }
   }

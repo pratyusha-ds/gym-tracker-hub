@@ -7,11 +7,16 @@ import Link from 'next/link';
 import DeleteConfirmModal from '@/components/categories/DeleteConfirmModal';
 import { toast } from 'sonner';
 
+interface ExtendedExerciseListProps extends ExerciseListProps {
+  historyDate?: string;
+}
+
 export default function ExerciseList({
   exercises,
   onDeleteExercise,
   onEditExercise,
-}: ExerciseListProps) {
+  historyDate,
+}: ExtendedExerciseListProps) {
   const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -58,7 +63,7 @@ export default function ExerciseList({
           <li key={ex.id} className="group transition-colors hover:bg-zinc-900/50">
             <div className="p-4 flex items-center justify-between">
               <Link
-                href={`/exercises/${ex.id}`}
+                href={`/exercises/${ex.id}${historyDate ? `?date=${historyDate}` : ''}`}
                 className="flex items-center gap-3 flex-1"
                 onClick={(e) => {
                   if ((e.target as HTMLElement).closest('button')) {

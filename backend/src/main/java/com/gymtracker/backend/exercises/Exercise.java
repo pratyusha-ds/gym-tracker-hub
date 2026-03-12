@@ -9,15 +9,17 @@ import lombok.*;
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = { "name", "category_id" })
 })
-@Data 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Exercise {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE) 
+    @EqualsAndHashCode.Include
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(nullable = false)

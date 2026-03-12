@@ -8,16 +8,16 @@ import lombok.*;
 
 @Entity
 @Table(name = "workout_sets")
-@Getter 
-@Setter 
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder 
+@Builder
 public class WorkoutSet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE) 
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(nullable = false)
@@ -30,8 +30,8 @@ public class WorkoutSet {
     @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id", nullable = false)
-    @JsonIgnore 
+    @JsonIgnore
     private WorkoutSession session;
 }

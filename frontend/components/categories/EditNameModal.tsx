@@ -22,12 +22,16 @@ export default function EditNameModal({
   const [currentValue, setCurrentValue] = useState(initialName);
 
   const handleUpdate = () => {
-    onSave(currentValue);
+    if (!currentValue.trim()) return;
+    onSave(currentValue.trim());
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-zinc-950 border-zinc-800 text-white">
+      <DialogContent
+        key={`${isOpen}-${initialName}`}
+        className="bg-zinc-950 border-zinc-800 text-white"
+      >
         <DialogHeader>
           <DialogTitle className="uppercase italic font-black tracking-tighter text-xl">
             {title}
@@ -35,8 +39,7 @@ export default function EditNameModal({
         </DialogHeader>
         <div className="py-4">
           <Input
-            key={initialName}
-            defaultValue={initialName}
+            value={currentValue}
             onChange={(e) => setCurrentValue(e.target.value)}
             className="bg-zinc-900 border-zinc-800 focus:border-primary"
             autoFocus

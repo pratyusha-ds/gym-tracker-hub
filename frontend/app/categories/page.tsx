@@ -2,44 +2,53 @@ import { Suspense } from 'react';
 import CategoryList from './CategoryList';
 import SearchBar from '@/components/categories/SearchBar';
 import AddCategoryModal from '@/components/categories/AddCategoryModal';
-import Link from 'next/link';
-import { Home } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ query?: string }>;
+  searchParams: Promise<{ query?: string; date?: string }>;
 }) {
-  const query = (await searchParams).query || '';
+  const params = await searchParams;
+  const query = params.query || '';
+  const historyDate = params.date || '';
 
   return (
     <main className="min-h-screen bg-black text-white p-6">
       <div className="max-w-2xl mx-auto pt-10">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-black uppercase italic tracking-tighter">
-            Your <span className="text-primary">Workouts</span>
-          </h1>
+        <div className="flex flex-col mb-8 gap-2">
+          <div className="flex items-center justify-between">
+            <h1 className="text-4xl font-black uppercase italic tracking-tighter">
+              Your <span className="text-primary">Workouts</span>
+            </h1>
 
-          <Link
-            href="/"
-            className="p-3 bg-zinc-900 hover:bg-zinc-800 rounded-xl border border-zinc-800 transition-all active:scale-95 group"
-            title="Go Home"
-          >
-            <Home className="h-6 w-6 text-zinc-400 group-hover:text-primary transition-colors" />
-          </Link>
+            {historyDate && (
+              <div className="flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/30 rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest animate-pulse">
+                <Calendar size={12} />
+                LOGGING: {historyDate}
+              </div>
+            )}
+          </div>
+
+          {historyDate && (
+            <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest italic">
+              You are adding sets to a past session.
+            </p>
+          )}
         </div>
 
         <SearchBar />
+
         <div className="mt-10 space-y-4">
           <Suspense
-            key={query}
+            key={`${query}-${historyDate}`}
             fallback={
               <div className="animate-pulse text-zinc-500 text-center py-10">
                 Fetching Categories...
               </div>
             }
           >
-            <CategoryList query={query} />
+            <CategoryList query={query} historyDate={historyDate} />
           </Suspense>
         </div>
       </div>

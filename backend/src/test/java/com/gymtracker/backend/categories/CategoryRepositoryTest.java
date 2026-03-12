@@ -1,5 +1,8 @@
 package com.gymtracker.backend.categories;
 
+import com.gymtracker.backend.users.User;
+import com.gymtracker.backend.users.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -18,47 +21,80 @@ class CategoryRepositoryTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Test
-    void shouldFindCategoryByNameIgnoreCase() {
+    @Autowired
+    private UserRepository userRepository;
 
-        Category category = new Category();
-        category.setName("Chest Day");
+    private User testUser;
+
+    @BeforeEach
+    void setUp() {
+
+        testUser = User.builder()
+                .clerkId("user_123")
+                .email("test@gym.com")
+                .name("Test User")
+                .build();
+        userRepository.save(testUser);
+    }
+
+    @Test
+    void shouldFindCategoryByNameIgnoreCaseAndUserClerkId() {
+        // Arrange
+        Category category = Category.builder()
+                .name("Chest Day")
+                .user(testUser)
+                .build();
         categoryRepository.save(category);
 
-        Optional<Category> found = categoryRepository.findByNameIgnoreCase("CHEST DAY");
+        // Act
+        Optional<Category> found = categoryRepository.findByNameIgnoreCaseAndUserClerkId("CHEST DAY", "user_123");
 
+        // Assert
         assertTrue(found.isPresent());
         assertEquals("Chest Day", found.get().getName());
     }
 
     @Test
-    void shouldFindCategoriesContainingString() {
+    void shouldFindCategoriesContainingStringForSpecificUser() {
+        // Arrange
+        categoryRepository.save(Category.builder().name("Upper Body").user(testUser).build());
+        categoryRepository.save(Category.builder().name("Lower Body").user(testUser).build());
 
-        Category cat1 = new Category();
-        cat1.setName("Back and Biceps");
-        Category cat2 = new Category();
-        cat2.setName("Upper Body");
-        categoryRepository.save(cat1);
-        categoryRepository.save(cat2);
+        User otherUser = User.builder().clerkId("user_456").email("other@gym.com").name("Other").build();
+        userRepository.save(otherUser);
+        categoryRepository.save(Category.builder().name("Upper Strength").user(otherUser).build());
 
-        List<Category> results = categoryRepository.findByNameContainingIgnoreCase("UPPER");
+        // Act
+        List<Category> results = categoryRepository.findByNameContainingIgnoreCaseAndUserClerkId("UPPER", "user_123");
 
-        assertEquals(1, results.size());
+        // Assert
+        assertEquals(1, results.size(), "Should only find the category belonging to user_123");
         assertEquals("Upper Body", results.get(0).getName());
     }
 
     @Test
-    void shouldEnforceUniqueNameConstraint() {
+    void shouldFindAllCategoriesByUserClerkId() {
+        // Arrange
+        categoryRepository.save(Category.builder().name("Back").user(testUser).build());
+        categoryRepository.save(Category.builder().name("Legs").user(testUser).build());
 
-        Category cat1 = new Category();
-        cat1.setName("Legs");
-        categoryRepository.saveAndFlush(cat1);
+        // Act
+        List<Category> results = categoryRepository.findByUserClerkId("user_123");
 
-        Category cat2 = new Category();
-        cat2.setName("Legs");
+        // Assert
+        assertEquals(2, results.size());
+    }
+
+    @Test
+    void shouldEnforceUniqueNamePerUser() {
+        // Arrange
+        categoryRepository.saveAndFlush(Category.builder().name("Legs").user(testUser).build());
+
+        // Act & Assert
+        Category duplicate = Category.builder().name("Legs").user(testUser).build();
 
         assertThrows(DataIntegrityViolationException.class, () -> {
-            categoryRepository.saveAndFlush(cat2);
+            categoryRepository.saveAndFlush(duplicate);
         });
     }
 }

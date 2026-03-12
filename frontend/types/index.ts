@@ -6,6 +6,7 @@ export interface Exercise {
 export interface Category {
   id: number;
   name: string;
+  icon?: string;
   exercises: Exercise[];
 }
 
@@ -14,26 +15,51 @@ export interface WorkoutSet {
   weight: string;
   reps: string;
   completed: boolean;
+  isNew?: boolean;
 }
 
-export interface SessionHistoryEntry {
+export interface WorkoutSetDTO {
+  id: number;
+  weight: number;
+  reps: number;
+  exerciseName: string;
+  exerciseId: number;
   date: string;
-  totalVolume: string;
-  sets: Array<{
-    kg: string;
-    reps: string;
-  }>;
+}
+
+export interface WorkoutSessionDTO {
+  id: number;
+  date: string;
+  sets: WorkoutSetDTO[];
+}
+
+export interface LogSet {
+  weight: number;
+  reps: number;
+}
+
+export interface LogEntry {
+  date: string;
+  totalVolume: number;
+  sets: LogSet[];
 }
 
 export interface HeaderProps {
-  exerciseId: string;
+  exerciseName: string;
   onFinish: () => void;
 }
 
 export interface ActiveWorkoutProps {
   sets: WorkoutSet[];
   onAddSet: () => void;
-  onToggleSet: (id: number) => void;
+  onUpdateSet: (id: number, field: 'weight' | 'reps', value: string) => void;
+  onSaveSet: (id: number) => void;
+  onDeleteSet: (id: number) => void;
+}
+
+export interface SidebarStatsProps {
+  exerciseId: string;
+  currentSets: WorkoutSet[];
 }
 
 export interface CategoryCardProps {
@@ -49,16 +75,16 @@ export interface ExerciseListProps {
   onEditExercise: (exercise: Exercise) => void;
 }
 
-export interface EditTarget {
-  id: number;
-  name: string;
-  type: 'category' | 'exercise';
-}
-
 export interface EditNameModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (newName: string) => void;
   initialName: string;
   title: string;
+}
+
+export interface EditTarget {
+  id: number;
+  name: string;
+  type: 'category' | 'exercise';
 }

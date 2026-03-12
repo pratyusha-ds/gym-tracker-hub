@@ -5,7 +5,7 @@ import { Category, Exercise, EditTarget } from '@/types';
 import {
   deleteCategoryAction,
   deleteExerciseAction,
-  updateCategoryNameAction,
+  updateCategoryAction,
   updateExerciseAction,
 } from '@/app/categories/actions';
 import CategoryCard from '@/components/categories/CategoryCard';
@@ -15,7 +15,13 @@ import DeleteConfirmModal from '@/components/categories/DeleteConfirmModal';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-export default function CategoryItem({ category }: { category: Category }) {
+export default function CategoryItem({
+  category,
+  historyDate,
+}: {
+  category: Category;
+  historyDate?: string;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -57,18 +63,15 @@ export default function CategoryItem({ category }: { category: Category }) {
   const handleSaveEdit = async (newName: string) => {
     if (!editTarget) return;
 
-    const action =
-      editTarget.type === 'category'
-        ? updateCategoryNameAction(editTarget.id, newName)
-        : updateExerciseAction(editTarget.id, newName);
-
-    const result = await action;
+    const result = await (editTarget.type === 'category'
+      ? updateCategoryAction(editTarget.id, newName)
+      : updateExerciseAction(editTarget.id, newName));
 
     if (result.success) {
       toast(`${editTarget.type.toUpperCase()} UPDATED`, { style: redTingeStyle });
       setIsEditModalOpen(false);
     } else {
-      toast.error(result.error);
+      toast.error(result.error || 'Update failed');
     }
   };
 
@@ -103,6 +106,7 @@ export default function CategoryItem({ category }: { category: Category }) {
             exercises={category.exercises}
             onDeleteExercise={deleteExerciseAction}
             onEditExercise={handleEditExercise}
+            historyDate={historyDate}
           />
         </div>
       </div>
