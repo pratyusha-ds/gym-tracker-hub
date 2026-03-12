@@ -1,23 +1,33 @@
 package com.gymtracker.backend.workoutsets;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/workout-sets")
+@RequiredArgsConstructor
 public class WorkoutSetController {
 
-    @Autowired
-    private WorkoutSetService workoutSetService;
+    private final WorkoutSetService workoutSetService;
 
-    @PostMapping("/batch")
-    public List<WorkoutSet> finishWorkout(@RequestBody List<WorkoutSet> sets) {
-        return workoutSetService.saveAllSets(sets);
+    @PostMapping
+    public WorkoutSetDTO saveSet(@RequestBody WorkoutSetDTO dto) {
+        return workoutSetService.saveSingleSetFromDTO(dto);
     }
 
-    @GetMapping("/exercise/{exerciseId}")
-    public List<WorkoutSet> getExerciseHistory(@PathVariable Long exerciseId) {
-        return workoutSetService.getHistoryByExercise(exerciseId);
+    @GetMapping("/date/{date}")
+    public List<WorkoutSetDTO> getSetsByDate(@PathVariable String date) {
+        return workoutSetService.getSetsBySessionDate(date);
+    }
+
+    @PutMapping("/{id}")
+    public WorkoutSetDTO updateSet(@PathVariable Long id, @RequestBody WorkoutSetDTO updateDto) {
+        return workoutSetService.updateSet(id, updateDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteSet(@PathVariable Long id) {
+        workoutSetService.deleteSet(id);
     }
 }
