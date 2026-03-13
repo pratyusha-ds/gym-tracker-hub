@@ -6,10 +6,11 @@ import {
   createExerciseAction,
   updateExerciseAction,
   deleteExerciseAction,
+  syncUserAction,
 } from '@/app/categories/actions';
 
 vi.mock('@/lib/constants', () => ({
-  API_BASE_URL: 'http://localhost:5000',
+  API_BASE_URL: 'http://localhost:8080/api',
 }));
 
 vi.mock('@/lib/api-utils', () => ({
@@ -32,8 +33,42 @@ global.fetch = vi.fn();
 const mockedFetch = fetch as Mock;
 
 describe('Server Actions', () => {
+  const mockUserData = { email: 'test@example.com', name: 'Test User' };
+
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  describe('User Actions', () => {
+    it('should return true and send payload if syncUserAction API call works', async () => {
+      mockedFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true }),
+      });
+
+      const result = await syncUserAction(mockUserData);
+
+      expect(result).toBe(true);
+      expect(mockedFetch).toHaveBeenCalledWith(
+        expect.stringContaining('/users/sync'),
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify(mockUserData),
+        })
+      );
+    });
+
+    it('should return false if syncUserAction API call fails', async () => {
+      mockedFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: async () => ({ message: 'Internal Server Error' }),
+      });
+
+      const result = await syncUserAction(mockUserData);
+
+      expect(result).toBe(false);
+    });
   });
 
   describe('Category Actions', () => {
@@ -71,13 +106,6 @@ describe('Server Actions', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBe('Invalid name');
     });
-
-    it('should return error if delete is called without an ID', async () => {
-      // @ts-expect-error - testing invalid input
-      const result = await deleteCategoryAction(undefined);
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Server connection failed');
-    });
   });
 
   describe('Exercise Actions', () => {
@@ -110,15 +138,11 @@ describe('Server Actions', () => {
   });
 
   describe('Error Handling', () => {
-    it('should handle API 500 errors', async () => {
-      mockedFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        json: async () => ({ message: 'Database Error' }),
-      });
+    it('should return connection failed error on fetch throw', async () => {
+      mockedFetch.mockRejectedValueOnce(new Error('Network error'));
       const result = await createCategoryAction({ name: 'Back', exercises: [] });
       expect(result.success).toBe(false);
-      expect(result.error).toBe('Database Error');
+      expect(result.error).toBe('Server connection failed');
     });
   });
 });

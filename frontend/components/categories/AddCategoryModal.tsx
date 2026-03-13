@@ -29,6 +29,11 @@ import { Input } from '@/components/ui/input';
 export default function AddCategoryModal() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const redTingeStyle = {
     background: '#09090b',
@@ -91,6 +96,8 @@ export default function AddCategoryModal() {
     }
   }
 
+  if (!mounted) return null;
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -144,14 +151,17 @@ export default function AddCategoryModal() {
                   size="icon"
                   disabled={isSubmitting}
                   onClick={() => append({ name: '' })}
-                  className="h-8 w-8 bg-zinc-900 hover:bg-primary hover:text-black"
+                  className="h-8 w-8 bg-zinc-900 hover:bg-primary hover:text-black transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
 
               {fields.map((field, index) => (
-                <div key={field.id} className="flex items-center gap-2">
+                <div
+                  key={field.id}
+                  className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-300"
+                >
                   <FormField
                     control={form.control}
                     name={`exercises.${index}.name`}

@@ -4,7 +4,6 @@ import { dark } from '@clerk/themes';
 import { geistSans, geistMono } from '@/lib/fonts';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
-import SyncUser from '@/components/auth/SyncUser';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 export const metadata: Metadata = {
@@ -51,7 +50,6 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white min-h-screen flex flex-col`}
         >
-          <SyncUser />
           <Navbar />
           <main className="grow pt-24 pb-12 max-w-7xl mx-auto w-full px-4 not-italic">
             {children}

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
@@ -17,25 +18,26 @@ public class UserService {
         private final CategoryRepository categoryRepository;
 
         @Transactional
-        public User syncUser(String clerkId, UserDTO userDto) {
-                return userRepository.findByClerkId(clerkId)
+        public User syncUser(String clerkId, UserDTO dto) {
+                User user = userRepository.findByClerkId(clerkId)
                                 .map(existingUser -> {
-                                        existingUser.setEmail(userDto.email());
-                                        existingUser.setName(userDto.name());
+                                        existingUser.setEmail(dto.email());
+                                        existingUser.setName(dto.name());
                                         return userRepository.save(existingUser);
                                 })
                                 .orElseGet(() -> {
-                                        User newUser = User.builder()
-                                                        .clerkId(clerkId)
-                                                        .email(userDto.email())
-                                                        .name(userDto.name())
-                                                        .build();
-                                        User savedUser = userRepository.save(newUser);
-
-                                        seedStarterKit(savedUser);
-
-                                        return savedUser;
+                                        User newUser = new User();
+                                        newUser.setClerkId(clerkId);
+                                        newUser.setEmail(dto.email());
+                                        newUser.setName(dto.name());
+                                        return userRepository.save(newUser);
                                 });
+
+                if (categoryRepository.findByUserClerkId(clerkId).isEmpty()) {
+                        seedStarterKit(user);
+                }
+
+                return user;
         }
 
         private void seedStarterKit(User user) {

@@ -9,6 +9,11 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+    }
+
     @ExceptionHandler(InvalidDataAccessApiUsageException.class)
     public ResponseEntity<?> handleRepositoryError(InvalidDataAccessApiUsageException e) {
         return ResponseEntity.badRequest().body(Map.of("message", "Database Error: A required ID was missing."));
@@ -16,8 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAllExceptions(Exception e) {
-        System.err.println("Error: " + e.getMessage());
         return ResponseEntity.status(500)
-                .body(Map.of("message", "Oops! Something went wrong at the gym. Please try again."));
+                .body(Map.of("message", "Internal Server Error. Please try again later."));
     }
 }
