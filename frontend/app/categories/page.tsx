@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import CategoryList from './CategoryList';
 import SearchBar from '@/components/categories/SearchBar';
 import AddCategoryModal from '@/components/categories/AddCategoryModal';
+import CategorySyncLoader from '@/components/categories/CategorySyncLoader';
 import { Calendar } from 'lucide-react';
 
 export default async function Page({
@@ -40,14 +41,7 @@ export default async function Page({
         <SearchBar />
 
         <div className="mt-10 space-y-4">
-          <Suspense
-            key={`${query}-${historyDate}`}
-            fallback={
-              <div className="animate-pulse text-zinc-500 text-center py-10">
-                Fetching Categories...
-              </div>
-            }
-          >
+          <Suspense key={`${query}-${historyDate}`} fallback={<CategorySyncLoader />}>
             <CategoryList query={query} historyDate={historyDate} />
           </Suspense>
         </div>

@@ -2,6 +2,8 @@ import { Category } from '@/types';
 import CategoryItem from './CategoryItem';
 import { API_BASE_URL } from '@/lib/constants';
 import { getAuthHeaders } from '@/lib/api-utils';
+import { syncUserAction } from '@/app/categories/actions';
+import { currentUser } from '@clerk/nextjs/server';
 
 export default async function CategoryList({
   query,
@@ -11,6 +13,13 @@ export default async function CategoryList({
   historyDate?: string;
 }) {
   try {
+    const user = await currentUser();
+
+    await syncUserAction({
+      email: user?.emailAddresses[0]?.emailAddress || '',
+      name: user?.fullName || 'Stark User',
+    });
+
     const headers = await getAuthHeaders();
 
     const url = new URL(`${API_BASE_URL}/categories`);
@@ -43,7 +52,8 @@ export default async function CategoryList({
         ))}
       </div>
     );
-  } catch {
+  } catch (error) {
+    console.error('CategoryList Error:', error);
     return (
       <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-center">
         <p className="font-bold uppercase tracking-widest text-xs mb-2">System Offline</p>

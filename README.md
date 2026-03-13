@@ -11,7 +11,7 @@
 
 ##
 
-GymTracker solves the friction of logging workouts by providing a high-performance, mobile-first interface. It moves beyond simple note-taking by categorizing movements and managing exercise libraries. Engineered with a **Next.js frontend** and a **Java Spring Boot** backend, this project demonstrates a bridge between modern React server patterns and enterprise-grade Java backend architecture.
+StarkRep solves the friction of logging workouts by providing a high-performance, mobile-first interface. It moves beyond simple note-taking by categorizing movements and managing exercise libraries. Engineered with a **Next.js frontend** and a **Java Spring Boot** backend, this project demonstrates a bridge between modern React server patterns and enterprise-grade Java backend architecture.
 
 ---
 
@@ -22,6 +22,7 @@ GymTracker solves the friction of logging workouts by providing a high-performan
 - **Framework:** Next.js (App Router)
 - **Styling:** Tailwind CSS + Shadcn/UI
 - **Validation:** Zod (Type-safe schemas)
+- **Testing:** Vitest, Playwright E2E
 - **Deployment:** Vercel
 
 ### Backend

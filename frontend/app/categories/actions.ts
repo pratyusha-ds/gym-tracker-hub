@@ -93,3 +93,22 @@ export async function deleteExerciseAction(exerciseId: number) {
     return { success: false, error: 'Server connection failed' };
   }
 }
+
+//SYNC USER
+export async function syncUserAction(userData: { email: string; name: string }) {
+  try {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE_URL}/users/sync`, {
+      method: 'POST',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+    return res.ok;
+  } catch (error) {
+    console.error('Sync Action Error:', error);
+    return false;
+  }
+}
