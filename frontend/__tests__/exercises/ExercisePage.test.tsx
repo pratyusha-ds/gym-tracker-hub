@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import WorkoutSessionPage from '@/app/exercises/[exerciseId]/page';
-import React from 'react';
 
 vi.mock('react', async () => {
   const actual = await vi.importActual<typeof import('react')>('react');
@@ -39,6 +38,7 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => ({
     get: vi.fn().mockReturnValue(null),
   }),
+  useParams: () => ({ exerciseId: '1' }),
 }));
 
 describe('WorkoutSessionPage', () => {
