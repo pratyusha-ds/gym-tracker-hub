@@ -22,7 +22,7 @@ export default function SearchBar() {
     <div className="relative">
       <input
         type="text"
-        placeholder="Search body parts (e.g. Chest, Legs)..."
+        placeholder="Search for an exercise ..."
         className="w-full p-4 pl-6 bg-zinc-900 border border-zinc-800 text-white rounded-2xl focus:ring-2 focus:ring-primary outline-none transition-all"
         onChange={(e) => handleSearch(e.target.value)}
         defaultValue={searchParams.get('search')?.toString()}
