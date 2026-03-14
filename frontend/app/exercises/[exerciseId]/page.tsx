@@ -3,12 +3,13 @@
 import { use, useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
-import { Calendar } from 'lucide-react';
+import { Calendar, LayoutDashboard } from 'lucide-react';
 import Header from '@/components/exercises/Header';
 import ActiveWorkout from '@/components/exercises/ActiveWorkout';
 import SidebarStats from '@/components/exercises/SidebarStats';
 import TrainingLog from '@/components/exercises/TrainingLog';
 import SaveAnywayModal from '@/components/exercises/SaveAnywayModal';
+import { Button } from '@/components/ui/button';
 import { WorkoutSet, WorkoutSetDTO } from '@/types';
 import { fetchExerciseData, fetchSetsByDate, saveSetAction, deleteSetAction } from './actions';
 
@@ -207,8 +208,29 @@ export default function WorkoutSessionPage({
               shakingSetId={shakingSetId}
             />
           </div>
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-4 space-y-6">
             <SidebarStats exerciseId={exerciseId} currentSets={sets} />
+
+            <div className="flex flex-col gap-4 md:hidden">
+              <Button
+                variant="outline"
+                onClick={() =>
+                  validateAndNavigate(`/history/${new Date().toISOString().split('T')[0]}`)
+                }
+                className="w-full border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900 text-zinc-400 font-bold py-8 rounded-2xl transition-all active:scale-95"
+              >
+                <LayoutDashboard className="mr-2 h-5 w-5" /> VIEW SUMMARY
+              </Button>
+
+              <Button
+                onClick={() =>
+                  validateAndNavigate(historyDate ? `/history/${historyDate}` : '/categories')
+                }
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-black py-8 text-lg rounded-2xl shadow-lg uppercase italic tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2"
+              >
+                FINISH WORKOUT
+              </Button>
+            </div>
           </div>
         </div>
 
