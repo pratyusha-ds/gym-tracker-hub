@@ -81,6 +81,7 @@ export default function DaySummaryPage({ params }: { params: Params }) {
               sets={exerciseSets}
               onDelete={handleDelete}
               onUpdate={handleUpdate}
+              date={date}
             />
           ))}
 

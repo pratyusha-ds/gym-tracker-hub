@@ -26,10 +26,11 @@ export default function WorkoutSessionPage({
   const searchParams = useSearchParams();
   const { getToken, isLoaded } = useAuth();
 
+  const urlName = searchParams.get('name');
   const historyDate = searchParams.get('date');
   const activeDate = historyDate || new Date().toISOString().split('T')[0];
 
-  const [exerciseName, setExerciseName] = useState('');
+  const [exerciseName, setExerciseName] = useState(urlName || '');
   const [sets, setSets] = useState<WorkoutSet[]>([]);
   const [shakingSetId, setShakingSetId] = useState<number | null>(null);
 
@@ -37,8 +38,8 @@ export default function WorkoutSessionPage({
   const [pendingDestination, setPendingDestination] = useState<string | null>(null);
 
   const saveTimers = useRef<{ [key: number]: NodeJS.Timeout }>({});
-
   const setsRef = useRef<WorkoutSet[]>([]);
+
   useEffect(() => {
     setsRef.current = sets;
   }, [sets]);
@@ -48,8 +49,11 @@ export default function WorkoutSessionPage({
       if (!isLoaded) return;
       try {
         const token = await getToken();
-        const exData = await fetchExerciseData(exerciseId, token);
-        setExerciseName(exData.name);
+
+        if (!exerciseName) {
+          const exData = await fetchExerciseData(exerciseId, token);
+          setExerciseName(exData.name);
+        }
 
         const allSets: WorkoutSetDTO[] = await fetchSetsByDate(activeDate, token);
 
@@ -73,7 +77,7 @@ export default function WorkoutSessionPage({
       }
     };
     initPage();
-  }, [exerciseId, getToken, isLoaded, activeDate]);
+  }, [exerciseId, getToken, isLoaded, activeDate, exerciseName]);
 
   const addSet = useCallback(() => {
     setSets((prev) => [
@@ -182,7 +186,7 @@ export default function WorkoutSessionPage({
     <main className="min-h-screen bg-black text-white p-4 md:p-12">
       <div className="max-w-7xl mx-auto space-y-10">
         <Header
-          exerciseName={exerciseName || '...'}
+          exerciseName={exerciseName}
           onFinish={() => validateAndNavigate('/categories')}
           onViewSummary={() => validateAndNavigate(`/history/${activeDate}`)}
           badge={
