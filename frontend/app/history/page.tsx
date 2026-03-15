@@ -28,6 +28,11 @@ export default function CalendarPage() {
   const [sessions, setSessions] = useState<WorkoutSessionDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const now = new Date();
+  const todayDate = now.getDate();
+  const todayMonth = now.getMonth();
+  const todayYear = now.getFullYear();
+
   useEffect(() => {
     async function loadData() {
       if (!isLoaded) return;
@@ -117,14 +122,14 @@ export default function CalendarPage() {
             <div className="flex gap-3">
               <Button
                 variant="outline"
-                className="rounded-2xl bg-black border-zinc-800"
+                className="rounded-2xl bg-black border-zinc-800 hover:border-zinc-600 transition-colors"
                 onClick={() => changeMonth(-1)}
               >
                 <ChevronLeft size={24} />
               </Button>
               <Button
                 variant="outline"
-                className="rounded-2xl bg-black border-zinc-800"
+                className="rounded-2xl bg-black border-zinc-800 hover:border-zinc-600 transition-colors"
                 onClick={() => changeMonth(1)}
               >
                 <ChevronRight size={24} />
@@ -147,6 +152,12 @@ export default function CalendarPage() {
             {Array.from({ length: daysInMonth }).map((_, i) => {
               const day = i + 1;
               const hasWorkout = workoutDays.includes(day);
+
+              const isToday =
+                day === todayDate &&
+                currentDate.getMonth() === todayMonth &&
+                currentDate.getFullYear() === todayYear;
+
               const dateString = `${year}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
               return (
@@ -155,19 +166,35 @@ export default function CalendarPage() {
                   key={day}
                   className={cn(
                     'aspect-square flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border transition-all duration-300 relative group',
-                    hasWorkout
-                      ? 'bg-primary/10 border-primary/40 hover:bg-primary/20 shadow-[0_0_20px_rgba(var(--primary),0.05)]'
-                      : 'bg-zinc-900/40 border-zinc-800 text-zinc-600 hover:text-white hover:bg-zinc-800'
+
+                    'bg-zinc-900/40 border-zinc-800 text-zinc-600 hover:text-white hover:bg-zinc-800',
+
+                    hasWorkout &&
+                      'bg-primary/10 border-primary/40 text-primary italic shadow-[0_0_20px_rgba(var(--primary),0.05)]',
+
+                    isToday &&
+                      'border-primary bg-primary/5 ring-1 ring-primary/50 shadow-[0_0_25px_-5px_rgba(var(--primary),0.4)]'
                   )}
                 >
                   <span
                     className={cn(
-                      'text-sm sm:text-lg md:text-xl font-black',
-                      hasWorkout ? 'text-primary italic' : 'text-zinc-600 group-hover:text-white'
+                      'text-sm sm:text-lg md:text-xl font-black transition-colors',
+                      isToday
+                        ? 'text-white'
+                        : hasWorkout
+                          ? 'text-primary'
+                          : 'text-zinc-600 group-hover:text-white'
                     )}
                   >
                     {day}
                   </span>
+
+                  {isToday && (
+                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                    </span>
+                  )}
 
                   {hasWorkout && (
                     <>

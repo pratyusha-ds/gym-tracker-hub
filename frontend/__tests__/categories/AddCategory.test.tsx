@@ -4,7 +4,7 @@ import AddCategoryModal from '@/components/categories/AddCategoryModal';
 import * as actions from '@/app/categories/actions';
 
 vi.mock('@/app/categories/actions', () => ({
-  createCategoryAction: vi.fn(() => Promise.resolve({ success: true })),
+  createCategoryAction: vi.fn().mockResolvedValue({ success: true }),
 }));
 
 describe('AddCategoryModal', () => {
@@ -18,17 +18,20 @@ describe('AddCategoryModal', () => {
     const openButton = screen.getByRole('button');
     fireEvent.click(openButton);
 
-    const exercisesHeader = await screen.findByRole('heading', { name: /^exercises$/i });
-    const exercisesSection = exercisesHeader.closest('div');
-    const addBtn = exercisesSection?.querySelector('button');
+    let inputs = await screen.findAllByPlaceholderText(/Exercise name.../i);
+    expect(inputs.length).toBe(1);
 
+    const addBtn = screen
+      .getByRole('button', { name: '' })
+      .parentElement?.querySelector('button[type="button"]');
     if (!addBtn) throw new Error('Add Exercise button not found');
 
     fireEvent.click(addBtn);
 
-    const inputs = await screen.findAllByPlaceholderText(/Exercise name.../i);
-    expect(inputs.length).toBe(1);
+    inputs = await screen.findAllByPlaceholderText(/Exercise name.../i);
+    expect(inputs.length).toBe(2);
   });
+
   it('shows a validation error if the category name is missing on submit', async () => {
     render(<AddCategoryModal />);
     fireEvent.click(screen.getByRole('button'));
@@ -37,11 +40,7 @@ describe('AddCategoryModal', () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      const errorMsg =
-        screen.queryByText(/String must contain at least/i) ||
-        screen.queryByText(/Required/i) ||
-        screen.queryByText(/Category name is required/i);
-      expect(errorMsg).toBeInTheDocument();
+      expect(screen.getByText(/Category name is required/i)).toBeInTheDocument();
     });
   });
 
@@ -52,12 +51,19 @@ describe('AddCategoryModal', () => {
     const nameInput = screen.getByPlaceholderText(/e.g. Chest/i);
     fireEvent.change(nameInput, { target: { value: 'Back' } });
 
+    const exerciseInputs = screen.getAllByPlaceholderText(/Exercise name.../i);
+    fireEvent.change(exerciseInputs[0], { target: { value: 'Pullups' } });
+
     const submitBtn = screen.getByRole('button', { name: /confirm save/i });
+
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
       expect(actions.createCategoryAction).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'Back' })
+        expect.objectContaining({
+          name: 'Back',
+          exercises: expect.arrayContaining([expect.objectContaining({ name: 'Pullups' })]),
+        })
       );
     });
   });

@@ -26,13 +26,20 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-export default function AddCategoryModal() {
+interface AddCategoryModalProps {
+  initialCategoryName?: string;
+  trigger?: React.ReactNode;
+}
+
+export default function AddCategoryModal({
+  initialCategoryName = '',
+  trigger,
+}: AddCategoryModalProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -46,7 +53,10 @@ export default function AddCategoryModal() {
 
   const form = useForm<CategoryTemplateValues>({
     resolver: zodResolver(categoryTemplateSchema),
-    defaultValues: { name: '', exercises: [] },
+    defaultValues: {
+      name: initialCategoryName,
+      exercises: [{ name: '' }],
+    },
   });
 
   const { fields, append, remove, replace } = useFieldArray({
@@ -55,20 +65,30 @@ export default function AddCategoryModal() {
   });
 
   const resetEverything = useCallback(() => {
-    replace([]);
-    form.reset({ name: '', exercises: [] });
-  }, [replace, form]);
+    form.reset({
+      name: initialCategoryName,
+      exercises: [{ name: '' }],
+    });
+  }, [form, initialCategoryName]);
 
   useEffect(() => {
-    if (!open) {
-      const timer = setTimeout(() => resetEverything(), 150);
-      return () => clearTimeout(timer);
+    if (open) {
+      form.setValue('name', initialCategoryName);
+      if (fields.length === 0) replace([{ name: '' }]);
+
+      setTimeout(() => {
+        if (!initialCategoryName) {
+          form.setFocus('name');
+        } else {
+          form.setFocus('exercises.0.name');
+        }
+      }, 150);
     }
-  }, [open, resetEverything]);
+  }, [open, initialCategoryName, form, replace, fields.length]);
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (newOpen) {
-      resetEverything();
+    if (!newOpen) {
+      setTimeout(() => resetEverything(), 150);
     }
     setOpen(newOpen);
   };
@@ -77,22 +97,16 @@ export default function AddCategoryModal() {
     setIsSubmitting(true);
     try {
       const result = await createCategoryAction(data);
-
       if (result && result.success) {
         setOpen(false);
-        setTimeout(() => {
-          toast.success(`${data.name.toUpperCase()} CREATED`, { style: redTingeStyle });
-          resetEverything();
-          setIsSubmitting(false);
-        }, 300);
+        toast.success(`${data.name.toUpperCase()} UPDATED`, { style: redTingeStyle });
+        resetEverything();
       } else {
-        toast.error(result?.error || 'Could not save', {
-          style: { background: '#7f1d1d', color: '#fff', border: '1px solid #ef4444' },
-        });
-        setIsSubmitting(false);
+        toast.error(result?.error || 'Could not save');
       }
     } catch {
       toast.error('Connection failed');
+    } finally {
       setIsSubmitting(false);
     }
   }
@@ -102,19 +116,21 @@ export default function AddCategoryModal() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button
-          className="fixed bottom-8 right-8 h-14 w-14 rounded-full bg-primary hover:bg-primary/90 text-black shadow-xl"
-          size="icon"
-          disabled={isSubmitting}
-        >
-          <Plus className="h-8 w-8" />
-        </Button>
+        {trigger || (
+          <Button
+            className="fixed bottom-8 right-8 h-14 w-14 rounded-full bg-primary hover:bg-primary/90 text-black shadow-xl z-50"
+            size="icon"
+            disabled={isSubmitting}
+          >
+            <Plus className="h-8 w-8" />
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-106.25 bg-zinc-950 border-zinc-800 text-white max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-black uppercase italic tracking-tighter">
-            Add <span className="text-primary">Exercises</span>
+            {initialCategoryName ? 'Add' : 'Create'} <span className="text-primary">Exercises</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -125,15 +141,15 @@ export default function AddCategoryModal() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-400 uppercase text-xs font-bold">
+                  <FormLabel className="text-zinc-400 uppercase text-xs font-bold tracking-widest">
                     Category Name
                   </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || !!initialCategoryName}
                       placeholder="e.g. Chest"
-                      className="bg-zinc-900 border-zinc-800 focus:border-primary h-12 disabled:opacity-50"
+                      className="bg-zinc-900 border-zinc-800 focus:border-primary h-12 disabled:opacity-70 font-bold"
                     />
                   </FormControl>
                   <FormMessage />
@@ -143,14 +159,13 @@ export default function AddCategoryModal() {
 
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-                <h3 className="text-sm font-bold text-zinc-500 uppercase flex items-center gap-2">
+                <h3 className="text-sm font-bold text-zinc-500 uppercase flex items-center gap-2 tracking-widest">
                   <Dumbbell className="w-4 h-4" /> Exercises
                 </h3>
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
-                  disabled={isSubmitting}
                   onClick={() => append({ name: '' })}
                   className="h-8 w-8 bg-zinc-900 hover:bg-primary hover:text-black transition-colors"
                 >
@@ -159,10 +174,7 @@ export default function AddCategoryModal() {
               </div>
 
               {fields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-300"
-                >
+                <div key={field.id} className="flex items-center gap-2">
                   <FormField
                     control={form.control}
                     name={`exercises.${index}.name`}
@@ -172,23 +184,23 @@ export default function AddCategoryModal() {
                           <Input
                             placeholder="Exercise name..."
                             {...field}
-                            disabled={isSubmitting}
-                            className="h-10 bg-zinc-900/50 border-zinc-800 focus:border-primary/50 disabled:opacity-50"
+                            className="h-10 bg-zinc-900/50 border-zinc-800 focus:border-primary/50"
                           />
                         </FormControl>
                       </FormItem>
                     )}
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    disabled={isSubmitting}
-                    onClick={() => remove(index)}
-                    className="text-zinc-500 hover:text-red-500 disabled:opacity-30"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {fields.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => remove(index)}
+                      className="text-zinc-500 hover:text-red-500"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               ))}
             </div>
@@ -196,7 +208,7 @@ export default function AddCategoryModal() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 font-black uppercase italic tracking-widest text-lg"
+              className="w-full h-12 font-black uppercase italic tracking-widest text-lg bg-red-600 hover:bg-red-700 text-white transition-colors"
             >
               {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Confirm Save'}
             </Button>

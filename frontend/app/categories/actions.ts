@@ -1,8 +1,14 @@
 'use server';
 
+import { revalidateTag } from 'next/cache';
 import { CategoryTemplateValues } from '@/lib/schemas';
 import { API_BASE_URL } from '@/lib/constants';
 import { getAuthHeaders, handleResponse } from '@/lib/api-utils';
+
+const invalidateCategoryCache = () => {
+  //@ts-expect-error - Ignore the argument count error for the build
+  revalidateTag('categories');
+};
 
 // CREATE CATEGORY
 export async function createCategoryAction(data: CategoryTemplateValues) {
@@ -13,7 +19,9 @@ export async function createCategoryAction(data: CategoryTemplateValues) {
       headers,
       body: JSON.stringify(data),
     });
-    return await handleResponse(res, 'Failed to create category', '/categories');
+    const result = await handleResponse(res, 'Failed to create category', '/categories');
+    if (result.success) invalidateCategoryCache();
+    return result;
   } catch {
     return { success: false, error: 'Server connection failed' };
   }
@@ -22,7 +30,6 @@ export async function createCategoryAction(data: CategoryTemplateValues) {
 // UPDATE CATEGORY
 export async function updateCategoryAction(id: number, newName: string) {
   if (!id || !newName.trim()) return { success: false, error: 'Invalid name' };
-
   try {
     const headers = await getAuthHeaders();
     const res = await fetch(`${API_BASE_URL}/categories/${id}`, {
@@ -30,7 +37,9 @@ export async function updateCategoryAction(id: number, newName: string) {
       headers,
       body: JSON.stringify({ name: newName.trim() }),
     });
-    return await handleResponse(res, 'Failed to update category', '/categories');
+    const result = await handleResponse(res, 'Failed to update category', '/categories');
+    if (result.success) invalidateCategoryCache();
+    return result;
   } catch {
     return { success: false, error: 'Server connection failed' };
   }
@@ -44,7 +53,9 @@ export async function deleteCategoryAction(id: number) {
       method: 'DELETE',
       headers,
     });
-    return await handleResponse(res, 'Failed to delete category', '/categories');
+    const result = await handleResponse(res, 'Failed to delete category', '/categories');
+    if (result.success) invalidateCategoryCache();
+    return result;
   } catch {
     return { success: false, error: 'Server connection failed' };
   }
@@ -59,7 +70,9 @@ export async function createExerciseAction(categoryId: number, name: string) {
       headers,
       body: JSON.stringify({ name: name.trim(), categoryId }),
     });
-    return await handleResponse(res, 'Failed to add exercise', '/categories');
+    const result = await handleResponse(res, 'Failed to add exercise', '/categories');
+    if (result.success) invalidateCategoryCache();
+    return result;
   } catch {
     return { success: false, error: 'Server connection failed' };
   }
@@ -74,7 +87,9 @@ export async function updateExerciseAction(id: number, name: string) {
       headers,
       body: JSON.stringify({ name: name.trim() }),
     });
-    return await handleResponse(res, 'Failed to update exercise', '/categories');
+    const result = await handleResponse(res, 'Failed to update exercise', '/categories');
+    if (result.success) invalidateCategoryCache();
+    return result;
   } catch {
     return { success: false, error: 'Server connection failed' };
   }
@@ -88,22 +103,21 @@ export async function deleteExerciseAction(exerciseId: number) {
       method: 'DELETE',
       headers,
     });
-    return await handleResponse(res, 'Failed to delete exercise', '/categories');
+    const result = await handleResponse(res, 'Failed to delete exercise', '/categories');
+    if (result.success) invalidateCategoryCache();
+    return result;
   } catch {
     return { success: false, error: 'Server connection failed' };
   }
 }
 
-//SYNC USER
+// SYNC USER
 export async function syncUserAction(userData: { email: string; name: string }) {
   try {
     const headers = await getAuthHeaders();
     const res = await fetch(`${API_BASE_URL}/users/sync`, {
       method: 'POST',
-      headers: {
-        ...headers,
-        'Content-Type': 'application/json',
-      },
+      headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
     });
     return res.ok;

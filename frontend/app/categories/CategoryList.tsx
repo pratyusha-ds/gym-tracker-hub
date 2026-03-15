@@ -15,7 +15,7 @@ export default async function CategoryList({
   try {
     const user = await currentUser();
 
-    await syncUserAction({
+    syncUserAction({
       email: user?.emailAddresses[0]?.emailAddress || '',
       name: user?.fullName || 'Stark User',
     });
@@ -26,7 +26,7 @@ export default async function CategoryList({
     if (query) url.searchParams.append('search', query);
 
     const res = await fetch(url.toString(), {
-      cache: 'no-store',
+      cache: 'force-cache',
       headers,
       next: { tags: ['categories'] },
     });
