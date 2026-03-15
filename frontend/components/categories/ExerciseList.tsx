@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { Exercise, ExerciseListProps } from '@/types';
-import { Dumbbell, Trash2, ChevronRight, Pencil } from 'lucide-react';
+import { Dumbbell, Trash2, ChevronRight, Pencil, Plus } from 'lucide-react';
 import Link from 'next/link';
 import DeleteConfirmModal from '@/components/categories/DeleteConfirmModal';
+import AddCategoryModal from '@/components/categories/AddCategoryModal';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 interface ExtendedExerciseListProps extends ExerciseListProps {
+  categoryName: string;
   historyDate?: string;
 }
 
@@ -15,6 +18,7 @@ export default function ExerciseList({
   exercises,
   onDeleteExercise,
   onEditExercise,
+  categoryName,
   historyDate,
 }: ExtendedExerciseListProps) {
   const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(null);
@@ -30,11 +34,9 @@ export default function ExerciseList({
 
   const handleConfirmDelete = async () => {
     if (!exerciseToDelete) return;
-
     setIsDeleting(true);
     try {
       const result = await onDeleteExercise(exerciseToDelete.id);
-
       if (result.success) {
         toast(`${exerciseToDelete.name} REMOVED`, { style: redTingeStyle });
         setExerciseToDelete(null);
@@ -50,8 +52,16 @@ export default function ExerciseList({
 
   if (exercises.length === 0) {
     return (
-      <div className="p-6 text-center text-zinc-500 italic border-t border-zinc-800">
-        No exercises added yet.
+      <div className="p-8 text-center border-t border-zinc-900 flex flex-col items-center gap-3">
+        <p className="text-zinc-500 italic text-sm">No exercises added yet.</p>
+        <AddCategoryModal
+          initialCategoryName={categoryName}
+          trigger={
+            <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-500/70 hover:text-red-400 transition-all py-1.5 px-5 border border-red-900/30 bg-red-950/20 rounded-full hover:border-red-500/50 hover:bg-red-950/40">
+              <Plus size={12} className="stroke-[3px]" /> Add Exercise
+            </button>
+          }
+        />
       </div>
     );
   }
@@ -72,11 +82,9 @@ export default function ExerciseList({
                 }}
               >
                 <Dumbbell className="w-4 h-4 text-primary" />
-                <div>
-                  <p className="text-sm font-bold text-zinc-200 uppercase tracking-tight group-hover:text-primary transition-colors">
-                    {ex.name}
-                  </p>
-                </div>
+                <p className="text-sm font-bold text-zinc-200 uppercase tracking-tight group-hover:text-primary transition-colors">
+                  {ex.name}
+                </p>
               </Link>
 
               <div className="flex items-center gap-1">
@@ -86,14 +94,12 @@ export default function ExerciseList({
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
-
                 <button
                   onClick={() => setExerciseToDelete(ex)}
                   className="p-2 text-zinc-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
-
                 <ChevronRight
                   size={16}
                   className="text-zinc-700 group-hover:text-zinc-400 transition-colors ml-1"
@@ -102,6 +108,17 @@ export default function ExerciseList({
             </div>
           </li>
         ))}
+
+        <li className="p-3 bg-zinc-900/30 flex justify-center">
+          <AddCategoryModal
+            initialCategoryName={categoryName}
+            trigger={
+              <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-500/70 hover:text-red-400 transition-all py-1.5 px-5 border border-red-900/30 bg-red-950/20 rounded-full hover:border-red-500/50 hover:bg-red-950/40">
+                <Plus size={12} className="stroke-[3px]" /> Add Exercise
+              </button>
+            }
+          />
+        </li>
       </ul>
 
       <DeleteConfirmModal

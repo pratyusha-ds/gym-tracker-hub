@@ -104,6 +104,7 @@ export default function CategoryItem({
         <div className="overflow-hidden border-t border-zinc-900 bg-zinc-900/20">
           <ExerciseList
             exercises={category.exercises}
+            categoryName={category.name}
             onDeleteExercise={deleteExerciseAction}
             onEditExercise={handleEditExercise}
             historyDate={historyDate}
