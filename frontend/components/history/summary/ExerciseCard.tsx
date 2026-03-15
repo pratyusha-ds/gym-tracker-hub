@@ -1,28 +1,46 @@
 'use client';
 
 import { useState } from 'react';
-import { Dumbbell, Trash2, AlertTriangle } from 'lucide-react';
+import { Dumbbell, Trash2, AlertTriangle, ArrowRight } from 'lucide-react';
 import { WorkoutSetDTO } from '@/types';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface ExerciseCardProps {
   exerciseName: string;
   sets: WorkoutSetDTO[];
   onDelete: (id: number) => void;
   onUpdate: (id: number, weight: number, reps: number) => void;
+  date: string;
 }
 
-export function ExerciseCard({ exerciseName, sets, onDelete, onUpdate }: ExerciseCardProps) {
+export function ExerciseCard({ exerciseName, sets, onDelete, onUpdate, date }: ExerciseCardProps) {
   const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  const exerciseId = sets[0]?.exerciseId;
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] overflow-hidden">
       <div className="p-6 border-b border-zinc-800 flex items-center justify-between bg-zinc-800/20">
-        <h3 className="text-xl font-black uppercase italic flex items-center gap-3">
-          <Dumbbell className="text-primary" size={20} /> {exerciseName}
-        </h3>
+        <Link
+          href={`/exercises/${exerciseId}?date=${date}`}
+          className="group flex items-center gap-3 hover:opacity-80 transition-all"
+        >
+          <h3 className="text-xl font-black uppercase italic flex items-center gap-3">
+            <Dumbbell
+              className="text-primary group-hover:scale-110 transition-transform"
+              size={20}
+            />
+            {exerciseName}
+          </h3>
+          <ArrowRight
+            size={16}
+            className="text-zinc-700 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"
+          />
+        </Link>
+
         <span className="text-[10px] font-black bg-black px-3 py-1 rounded-full text-zinc-500">
-          {sets.length} SETS
+          {sets.length} {sets.length === 1 ? 'SET' : 'SETS'}
         </span>
       </div>
 

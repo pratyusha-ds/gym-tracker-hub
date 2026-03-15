@@ -30,7 +30,7 @@ export default function Header({ exerciseName, onFinish, onViewSummary, badge }:
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+      <div className="hidden md:flex flex-col sm:flex-row gap-4 w-full md:w-auto">
         <Button
           variant="outline"
           onClick={onViewSummary}

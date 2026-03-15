@@ -12,8 +12,8 @@ export default function Footer() {
         <div className="flex items-center gap-4">
           <div className="h-4 w-1 bg-red-600 shrink-0" />
           <p className="text-[9px] md:text-[10px] text-zinc-600 font-black tracking-[0.2em] md:tracking-[0.3em] leading-relaxed text-center md:text-left">
-            © 2026 StarkRep <span className="mx-1 opacity-50">/</span>
-            <br className="block md:hidden" />
+            © 2026 StarkRep <span className="max-md:hidden mx-1 opacity-50">/</span>
+            <br className="md:hidden" />
             <span className="uppercase">Built for the dedicated</span>
           </p>
         </div>

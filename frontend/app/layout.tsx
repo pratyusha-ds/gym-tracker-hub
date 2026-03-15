@@ -27,11 +27,6 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * RootLayout defines the global application structure, integrating
- * Clerk authentication providers, the Geist font family, and the
- * StarkRep custom dark theme.
- */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -51,7 +46,8 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white min-h-screen flex flex-col`}
         >
           <Navbar />
-          <main className="grow pt-24 pb-12 max-w-7xl mx-auto w-full px-4 not-italic">
+
+          <main className="grow pt-20 pb-6 md:pt-24 md:pb-12 max-w-7xl mx-auto w-full px-4 not-italic">
             {children}
           </main>
           <Footer />
@@ -67,7 +63,7 @@ export default function RootLayout({
                 fontStyle: 'italic',
               },
             }}
-          />{' '}
+          />
         </body>
       </html>
     </ClerkProvider>
